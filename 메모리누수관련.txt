@@ -1,0 +1,103 @@
+Nuxt.js에서 메모리 누수가 발생하는 주요 원인
+Vue 컴포넌트가 해제되지 않는 경우
+
+watch나 setInterval, setTimeout이 컴포넌트가 언마운트된 후에도 계속 실행됨.
+이벤트 리스너(addEventListener)가 제거되지 않음.
+Vuex / Pinia의 상태가 계속 유지되는 경우
+
+글로벌 상태가 너무 많거나, 필요 없는 데이터를 계속 유지함.
+SSR(서버 사이드 렌더링)에서 서버 캐시가 누적되는 경우
+
+asyncData 또는 fetch에서 큰 데이터를 불러오고, 이를 메모리에서 해제하지 않음.
+Nuxt 플러그인에서 전역 객체를 잘못 관리하는 경우
+
+Vue.prototype이나 app.provide()에 불필요한 대용량 데이터를 저장함.
+Axios나 Fetch API에서 응답 객체를 계속 유지하는 경우
+
+asyncData에서 API 호출 후, 불필요한 데이터를 저장하고 해제하지 않음.
+
+📌 사례 및 해결책
+1️⃣ 이벤트 리스너 정리 누락
+✅ 문제 코드 (메모리 누수 발생)
+<script setup>
+onMounted(() => {
+  window.addEventListener("resize", () => {
+    console.log("윈도우 리사이즈");
+  });
+});
+</script>
+
+✅ 해결 방법 (언마운트 시 이벤트 제거)
+<script setup>
+onMounted(() => {
+  const resizeHandler = () => {
+    console.log("윈도우 리사이즈");
+  };
+  window.addEventListener("resize", resizeHandler);
+
+  onUnmounted(() => {
+    window.removeEventListener("resize", resizeHandler);
+  });
+});
+</script>
+
+2️⃣ setInterval / setTimeout이 해제되지 않음
+✅ 문제 코드
+<script setup>
+onMounted(() => {
+  setInterval(() => {
+    console.log("1초마다 실행됨");
+  }, 1000);
+});
+</script>
+
+✅ 해결 방법 (타이머 정리)
+<script setup>
+let timerId;
+
+onMounted(() => {
+  timerId = setInterval(() => {
+    console.log("1초마다 실행됨");
+  }, 1000);
+});
+
+onUnmounted(() => {
+  clearInterval(timerId);
+});
+</script>
+
+3️⃣ Vuex / Pinia에서 필요 없는 데이터 유지
+✅ 문제 코드
+export const useMyStore = defineStore("myStore", {
+  state: () => ({
+    largeData: []
+  }),
+  actions: {
+    async fetchData() {
+      this.largeData = await fetchDataFromApi();
+    }
+  }
+});
+
+✅ 해결 방법 (데이터 해제)
+export const useMyStore = defineStore("myStore", {
+  state: () => ({
+    largeData: []
+  }),
+  actions: {
+    async fetchData() {
+      this.largeData = await fetchDataFromApi();
+    },
+    clearData() {
+      this.largeData = [];
+    }
+  }
+});
+
+<script setup>
+const store = useMyStore();
+
+onUnmounted(() => {
+  store.clearData();
+});
+</script>

@@ -1,0 +1,53 @@
+프론트엔드 프레임워크
+    : NUXT.JS
+    HTTP 통신 라이브러리
+        : $Fetch=(NUXT.JS 기본 플러그인)
+
+프론트엔드 언어
+    : TYPESCRIPT, JAVASCRIPT
+
+스타일
+    : TAILWINDCSS
+
+코드 컨벤션
+    : esLint
+
+UI 라이브러리
+    : PRIMEVUE, WIJMO
+
+-------------------------------------------------------------------
+폴더 구조
+
+components=컴포넌트의 모음 폴더
+    : GaonFlexGrid=위즈모그리드 컴포넌트
+    : withGrid=위즈모그리드 관련 하위 컴포넌트
+
+pages=페이지에 대한 폴더 해당 폴더를 기준으로 라우팅이 발생한다.
+
+plugins=NUXT.JS 플러그인 등록 폴더
+    : registerWijmo.ts=위즈모 그리드 사용 등록 플러그인
+
+public=이미지 등 정적인 파일이 저장되는 경로
+
+server=nuxt.js로 백엔드 개발을 할 때 사용하는 폴더(사용안함)
+
+service=화면별 메서드 등록 폴더
+
+types=타입스크립트 인터페이스 등록 폴더
+    : BaseService.d.ts=베이스 서비스의 원형 인터페이스
+    : Business.d.ts=비즈니스 관련 DTO의 인터페이스들 모음
+    : GaonFlexGrid.d.ts=위즈모그리드 컴포넌트 인터페이스 모음
+    : Globals.d.ts=전역 인터페이스 모음
+
+utils=자바스크립트 유틸 등록 폴더
+    : GridUtil.ts=위즈모그리드 컴포넌트 관련 유틸 클래스
+    : Http.ts=http 통신 관련 유틸 클래스
+    : JsUtil.ts=자바스크립트 유틸 관련 클래스
+
+app.vue=화면이 열릴 때 호출되는 메인 페이지
+eslint.config.mjs=eslint 설정 파일
+nuxt.config.ts=Nuxt.js 설정 파일
+package.json=npm 의존성 설정 파일
+package-lock.json=현재 npm으로 등록된 의존성 목록 파일
+pnpm-lock.yaml=현재 pnpm으로 등록된 의존성 목록 파일
+tailwind.config.js=테일윈드 설정 관령 파일이나, 현재는 역할 없음(vsCode의 tailwindcss 인텔리센스 익스텐션이 tailwind.config.js 해당 파일이 있어야 동작하므로, 들어 있음)

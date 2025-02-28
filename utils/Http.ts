@@ -1,24 +1,16 @@
 export class Http {
   private static readonly baseUrl = 'http://localhost:30000';
-  private static readonly ports = {
-    auth: '30000',
-  };
 
   private static readonly getPortFromAction = (url: string): string => {
-    // const endPoint = action.split('/')[1];
-    // const port = this.ports[endPoint];
     const reUrl = this.baseUrl + url;
     return reUrl;
   };
 
-  private static getAuthHeader(): Headers {
-    const token = localStorage.getItem('token'); // 토큰 가져오기
-    if (token) {
-      return new Headers({
-        Authorization: `Bearer ${token}`, // Bearer 토큰 방식
-      });
-    }
-    return new Headers(); // 토큰이 없으면 빈 헤더 반환
+  private static getAuthHeader(): any {
+    const token = localStorage.getItem('token') || ''; // 토큰 가져오기
+    return {
+      Authorization: `Bearer ${token}`, // Bearer 토큰 방식
+    };
   }
 
   private static async fetchWithAuth(url: string, options: object): Promise<any> {
@@ -32,7 +24,6 @@ export class Http {
     };
 
     const reqUrl = this.getPortFromAction(url);
-
     return $fetch(reqUrl, mergedOptions);
   }
 

@@ -150,7 +150,7 @@
                 </div>
                 <div>
                   <InputText
-                    v-model="signupDto.username"
+                    v-model="changePasswordDto.username"
                     type="text"
                     placeholder="아이디를 입력하세요"
                     class="w-full"
@@ -162,21 +162,9 @@
                 </div>
                 <div>
                   <InputText
-                    v-model="signupDto.email"
+                    v-model="changePasswordDto.email"
                     type="email"
                     placeholder="이메일을 입력하세요"
-                    class="w-full"
-                    required
-                  />
-                </div>
-                <div class="font-bold">
-                  현재 비밀번호
-                </div>
-                <div>
-                  <InputText
-                    v-model="changePasswordDto.currentPassword"
-                    type="password"
-                    placeholder="현재 비밀번호를 입력하세요"
                     class="w-full"
                     required
                   />
@@ -187,7 +175,7 @@
                 </div>
                 <div>
                   <InputText
-                    v-model="changePasswordDto.newPassword"
+                    v-model="changePasswordDto.password"
                     type="password"
                     placeholder="새 비밀번호를 입력하세요"
                     class="w-full"
@@ -244,8 +232,9 @@ interface SignupDto {
 }
 
 interface ChangePasswordDto {
-  currentPassword: string
-  newPassword: string
+  username: string
+  email: string
+  password: string
   confirmPassword: string
 }
 
@@ -267,15 +256,48 @@ const signupDto = ref<SignupDto>({
 
 // 비밀번호 변경 관련 변수
 const changePasswordDto = ref<ChangePasswordDto>({
-  currentPassword: '',
-  newPassword: '',
+  email: '',
+  username: '',
+  password: '',
   confirmPassword: '',
 });
 
 /* Functions */
 // 로그인 핸들러 (기존 코드 유지)
-function handleLogin() {
-  Http.post('/auth/login', loginDto.value);
+async function handleLogin() {
+  try {
+    const token = await Http.post<string>('/auth/login', loginDto.value);
+    setCookie('token', token, { path: '/' });
+    navigateTo('/main');
+  }
+  catch (error) {
+    console.error('Login failed:', error);
+  }
+}
+
+function setCookie(name: string, value: string, options: any) {
+  let cookie = `${name}=${encodeURIComponent(value)};`;
+
+  // Default options
+  const defaultOptions = {
+    path: '/',
+    secure: true, // This should be true if your site is served over HTTPS
+    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+    sameSite: 'lax', // Helps prevent CSRF attacks
+  };
+
+  // Merge default options with provided options
+  const mergedOptions = { ...defaultOptions, ...options };
+
+  // Add each option to the cookie string
+  for (const key in mergedOptions) {
+    if (mergedOptions[key] !== undefined) {
+      cookie += `${key.charAt(0).toUpperCase() + key.slice(1)}=${mergedOptions[key]};`;
+    }
+  }
+
+  // Set the cookie
+  document.cookie = cookie;
 }
 
 function handleCancel() {
@@ -285,10 +307,11 @@ function handleCancel() {
 
 // 회원가입 핸들러
 function handleSignup() {
-    const { password, confirmPassword } = signupDto.value;
+  const { password, confirmPassword } = signupDto.value;
 
-    if (password !== confirmPassword) return console.error('Passwords do not match');
-    Http.post('/auth/signup', signupDto.value);
+  if (password !== confirmPassword)
+    return console.error('Passwords do not match');
+  Http.post('/auth/signup', signupDto.value);
 }
 
 function handleSignupCancel() {
@@ -301,16 +324,18 @@ function handleSignupCancel() {
 
 // 비밀번호 변경 핸들러
 function handlePasswordChange() {
-  const { currentPassword, newPassword, confirmPassword } = changePasswordDto.value;
+  const { password, confirmPassword } = changePasswordDto.value;
 
-  if (newPassword !== confirmPassword) {
+  if (password !== confirmPassword) {
     console.error('Passwords do not match');
   }
+  Http.post('/auth/changePassword', changePasswordDto.value);
 }
 
 function handlePasswordChangeCancel() {
-  changePasswordDto.value.currentPassword = '';
-  changePasswordDto.value.newPassword = '';
+  changePasswordDto.value.username = '';
+  changePasswordDto.value.email = '';
+  changePasswordDto.value.password = '';
   changePasswordDto.value.confirmPassword = '';
 }
 </script>

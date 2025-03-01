@@ -8,6 +8,7 @@ export class Http {
 
   private static getAuthHeader(): any {
     const token = localStorage.getItem('token') || ''; // 토큰 가져오기
+
     return {
       Authorization: `Bearer ${token}`, // Bearer 토큰 방식
     };
@@ -36,6 +37,7 @@ export class Http {
     });
   }
 
+  public static async post<T>(action: string, reqBody: object | object[] | void): Promise<T>;
   public static async post(action: string, reqBody: object | object[] | void): Promise<any> {
     return Http.fetchWithAuth(action, {
       method: 'POST',

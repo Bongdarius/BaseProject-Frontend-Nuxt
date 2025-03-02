@@ -6,23 +6,19 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
-const router = useRouter();
-const authStore = useAuthStore();
 const loading = ref(true);
 
 onMounted(() => {
   setTimeout(() => {
     if (!authStore.isAuthenticated) {
       // User is not authenticated, redirect to login page
-      router.push({ name: 'login' });
+      navigateTo('/login');
     }
     else {
       // User is authenticated, redirect to main content page
-      router.push({ name: 'main' });
+      navigateTo('/main');
     }
     loading.value = false; // Stop spinner once navigation decision is made
   }, 1000); // Simulate a delay for demonstration purposes

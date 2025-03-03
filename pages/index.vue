@@ -11,17 +11,7 @@ import { ref } from 'vue';
 const loading = ref(true);
 
 onMounted(() => {
-  setTimeout(() => {
-    if (!authStore.isAuthenticated) {
-      // User is not authenticated, redirect to login page
-      navigateTo('/login');
-    }
-    else {
-      // User is authenticated, redirect to main content page
-      navigateTo('/main');
-    }
-    loading.value = false; // Stop spinner once navigation decision is made
-  }, 1000); // Simulate a delay for demonstration purposes
+
 });
 </script>
 

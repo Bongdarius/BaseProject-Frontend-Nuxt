@@ -267,37 +267,17 @@ const changePasswordDto = ref<ChangePasswordDto>({
 async function handleLogin() {
   try {
     const token = await Http.post<string>('/auth/login', loginDto.value);
-    setCookie('token', token, { path: '/' });
+    const jwtCookie = useCookie('token', {
+      path: '/',
+      expires: new Date(Date.now() + 3600 * 1000), // 1 hour
+      sameSite: 'strict',
+    });
+    jwtCookie.value = token;
     navigateTo('/main');
   }
   catch (error) {
     console.error('Login failed:', error);
   }
-}
-
-function setCookie(name: string, value: string, options: any) {
-  let cookie = `${name}=${encodeURIComponent(value)};`;
-
-  // Default options
-  const defaultOptions = {
-    path: '/',
-    secure: true, // This should be true if your site is served over HTTPS
-    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-    sameSite: 'lax', // Helps prevent CSRF attacks
-  };
-
-  // Merge default options with provided options
-  const mergedOptions = { ...defaultOptions, ...options };
-
-  // Add each option to the cookie string
-  for (const key in mergedOptions) {
-    if (mergedOptions[key] !== undefined) {
-      cookie += `${key.charAt(0).toUpperCase() + key.slice(1)}=${mergedOptions[key]};`;
-    }
-  }
-
-  // Set the cookie
-  document.cookie = cookie;
 }
 
 function handleCancel() {

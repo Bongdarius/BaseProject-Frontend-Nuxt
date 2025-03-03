@@ -7,7 +7,7 @@ export class Http {
   };
 
   private static getAuthHeader(): any {
-    const token = JsUtil.getCookie('token');
+    const token = useCookie('token').value;
 
     return {
       Authorization: `Bearer ${token}`, // Bearer 토큰 방식

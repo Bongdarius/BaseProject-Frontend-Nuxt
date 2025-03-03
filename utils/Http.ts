@@ -7,7 +7,7 @@ export class Http {
   };
 
   private static getAuthHeader(): any {
-    const token = localStorage.getItem('token') || ''; // 토큰 가져오기
+    const token = JsUtil.getCookie('token');
 
     return {
       Authorization: `Bearer ${token}`, // Bearer 토큰 방식
@@ -29,8 +29,7 @@ export class Http {
   }
 
   public static async get(action: string, params: object | null | void): Promise<any[]>;
-  public static async get<T>(action: string, params: object | null | void): Promise<T[]>;
-  public static async get<T>(action: string, params: object | null | void): Promise<T[] | any[]> {
+  public static async get<T>(action: string, params: object | null | void): Promise<T[]> {
     return Http.fetchWithAuth(action, {
       method: 'GET',
       params: params || {},
@@ -45,6 +44,7 @@ export class Http {
     });
   }
 
+  public static async put<T>(action: string, reqBody: object | object[] | void): Promise<T>;
   public static async put(action: string, reqBody: object | object[] | void): Promise<any> {
     return Http.fetchWithAuth(action, {
       method: 'PUT',
@@ -52,6 +52,7 @@ export class Http {
     });
   }
 
+  public static async patch<T>(action: string, reqBody: object | object[] | void): Promise<T>;
   public static async patch(action: string, reqBody: object | object[] | void): Promise<any> {
     return Http.fetchWithAuth(action, {
       method: 'PATCH',
@@ -59,6 +60,7 @@ export class Http {
     });
   }
 
+  public static async delete<T>(action: string, params: object | void): Promise<T>;
   public static async delete(action: string, params: object | void): Promise<any> {
     return Http.fetchWithAuth(action, {
       method: 'DELETE',

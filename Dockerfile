@@ -1,30 +1,11 @@
-# Stage 1: Build the application
-FROM node:22.14.0-alpine AS build
+# Use the official Node.js 20 image from DockerHub
+FROM node:22.13.0-alpine AS base
 
-WORKDIR /app
+# Copy necessary files from the 'base' stage
+COPY .output app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-COPY *.npmrc ./
-RUN npm install -g pnpm
-RUN pnpm install
+# Expose the port the app runs on
+EXPOSE 3000
 
-# Copy source code to container
-COPY . .
-
-# Build the project using pnpm generate (or equivalent command)
-RUN pnpm run generate
-
-# Stage 2: Serve the application with Nginx
-FROM nginx:alpine AS production
-
-WORKDIR /usr/share/nginx/html
-
-# Copy built files from the build stage to the Nginx container
-COPY --from=build /app/dist/ . 
-
-# Expose port 80 for the web server (default port for Nginx)
-EXPOSE 80
-
-# Start Nginx when the container launches
-CMD ["nginx", "-g", "daemon off;"]
+# Define the command to run the app
+CMD ["node", "./app/server/index.mjs"]
